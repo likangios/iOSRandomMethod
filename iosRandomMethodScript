@@ -1,0 +1,237 @@
+#!/bin/sh
+
+export LC_CTYPE=C
+
+CLASSES_FILE_LIST="classes.list"
+METHOD_FILE_H="method_h.list"
+METHOD_FILE_M="method_m.list"
+
+
+RANDOM_METHOD_COUNT=5
+FILE_PATH=$2
+OPT=$1
+########################################################################
+if [ $OPT == "add" ] && [[ ! -z "$FILE_PATH" ]]
+then
+
+if [[ ! -z "$3" ]]
+then
+RANDOM_METHOD_COUNT=$3
+fi
+
+echo 添加随机方法
+#提取类名
+echo 提取类名
+ls  $FILE_PATH | awk -F "/" '{print $NF}'| awk '{split($0,b,"."); print b[1]; }'| sort | uniq > $CLASSES_FILE_LIST
+
+########################################################################
+#给.h文件添加标记
+addTagToH(){
+linenumber=$(grep  -n  "interface"   $FILE_PATH/$1.h  | tail -1 | cut  -d  ":"  -f  1)
+sed -i '' "$linenumber a\\
+/////RandomMethodTag End/////
+" $FILE_PATH/$1.h
+}
+#给.m文件添加标记
+addTagToM(){
+#查找到包含implementation 的最后一行 获取行号
+linenumber=$(grep  -n  "implementation"   $FILE_PATH/$1.m  | tail -1 | cut  -d  ":"  -f  1)
+sed -i '' "$linenumber a\\
+/////RandomMethodTag End/////
+" $FILE_PATH/$1.m
+}
+#遍历文件头
+echo 添加标记用于移除
+exec 3<$CLASSES_FILE_LIST
+while read name<&3
+do
+if [[ ! -z "$name" ]];
+then
+addTagToH $name
+addTagToM $name
+fi
+done
+echo 添加标记完成
+########################################################################
+
+#获取方法名字
+getRandomName(){
+nameArray=("History" "Voice" "Cache" "Error" "Update" "Card" "Finish" "Function" "insert" "Height" "Web" "Message" "Has" "Height" "Clean" "Config" "System" "Do" "Global" "Load" "Something" "Secret" "Back" "Local" "Type" "Name" "App" "Share" "Input" "Animation" "Help" "Datas" "Offet" "Dismiss" "Match" "Tabbar" "Start" "Scroll" "Show" "Model" "Device" "User" "Version" "Shadow" "Record" "Common" "Page" "Layer" "Name" "Frame" "Stop" "Cell" "Push" "Did" "Tool")
+int=1
+stringName=''
+arrayCount=${#nameArray[*]}
+while(( $int<=5 ))
+do
+randomNumber=`expr $RANDOM % $arrayCount`
+randomWord=${nameArray[$randomNumber]}
+stringName="$stringName$randomWord"
+let "int++"
+done
+echo $stringName
+}
+#获取返回值类型
+getRetrunType(){
+randomNumber=`expr $RANDOM % 2`
+if [ $randomNumber == 1 ]
+then
+echo "(void)"
+else
+echo "(id)"
+fi
+}
+#获取是否有参数
+getIsArg(){
+randomNumber=`expr $RANDOM % 2`
+if [ $randomNumber == 1 ]
+then
+echo ":(id)arg1"
+else
+echo ""
+fi
+}
+#获取方法实现类名
+getClassType(){
+classArray=("NSString" "NSDictionary" "NSSet" "NSMutableArray" "NSArray" "NSURL")
+arrayCount=${#classArray[*]}
+randomNumber=`expr $RANDOM % $arrayCount`
+randomClass=${classArray[$randomNumber]}
+echo $randomClass
+}
+#获取参数
+setOrGet(){
+randomNumber=`expr $RANDOM % 2`
+if [ $randomNumber == 1 ]
+then
+echo "set"
+else
+echo "get"
+fi
+}
+#获取参数
+methodType(){
+randomNumber=`expr $RANDOM % 2`
+if [ $randomNumber == 1 ]
+then
+echo "+"
+else
+echo "-"
+fi
+}
+
+getRandomMethod (){
+name=$(getRandomName)
+type=$(getRetrunType)
+arg=$(getIsArg)
+cls=$(getClassType)
+set=$(setOrGet)
+add=$(methodType)
+echo "method:$add$type$name$arg;"
+echo "$add$type$name$arg;" >> $METHOD_FILE_H
+echo "$add$type$name$arg{"  >> $METHOD_FILE_M
+if [ $type == "(void)" ]
+then
+echo    "}"  >> $METHOD_FILE_M
+else
+echo    "    $cls *obj=[[$cls alloc]init];"  >> $METHOD_FILE_M
+echo    "    return obj;"  >> $METHOD_FILE_M
+echo    "}"  >> $METHOD_FILE_M
+fi
+}
+#循环生成方法备用
+methodProduct(){
+echo 生成随机方法
+echo '' > $METHOD_FILE_H
+echo '' > $METHOD_FILE_M
+int=1
+while(( $int<=$* ))
+do
+getRandomMethod
+let "int++"
+done
+echo 生成随机方法完成
+}
+
+#添加.h
+addMethdo_h(){
+file_path=$FILE_PATH/$1.h
+linenumber=$(grep  -n  "interface"   $file_path  | tail -1 | cut  -d  ":"  -f  1)
+cat "$METHOD_FILE_H" | while read  line; do
+if [[ ! -z "$line" ]] && [[ ! -z "$linenumber" ]];
+then
+sed -i '' "$linenumber a\\
+$line
+" $file_path
+let "linenumber++"
+fi
+done
+}
+#添加.m
+addMethdo_m(){
+file_path=$FILE_PATH/$1.m
+linenumber=$(grep  -n  "implementation"   $file_path  | tail -1 | cut  -d  ":"  -f  1)
+cat "$METHOD_FILE_M" | while read  line; do
+if [[ ! -z "$line" ]] && [[ ! -z "$linenumber" ]];
+then
+sed -i '' "$linenumber a\\
+$line
+" $file_path
+let "linenumber++"
+fi
+done
+}
+
+cat "$CLASSES_FILE_LIST" | while read  line; do
+if [[ ! -z "$line" ]];
+then
+methodProduct $RANDOM_METHOD_COUNT
+addMethdo_h $line
+addMethdo_m $line
+fi
+done
+rm $METHOD_FILE_H
+rm $METHOD_FILE_M
+elif [ $OPT == "rm" ]
+then
+########################################################################
+echo  删除随机方法
+#替换方法H
+remove_h(){
+file_path=$FILE_PATH/$1.h
+beginLine=$(grep  -n  "interface"   $file_path  | tail -1 | cut  -d  ":"  -f  1)
+ednLine=$(grep  -n  "/////RandomMethodTag End/////"   $file_path  | tail -1 | cut  -d  ":"  -f  1)
+nextLine=`expr $beginLine + 1`
+if [[ ! -z "$ednLine" ]] && [[ ! -z "$beginLine" ]] && [[ ! -z "$ednLine" ]];
+then
+sed -i '' "$nextLine,$ednLine d" $file_path
+fi
+}
+remove_m(){
+#查找到包含implementation 的最后一行 获取行号
+file_path=$FILE_PATH/$1.m
+beginLine=$(grep  -n  "implementation"   $file_path  | tail -1 | cut  -d  ":"  -f  1)
+ednLine=$(grep  -n  "/////RandomMethodTag End/////"   $file_path  | tail -1 | cut  -d  ":"  -f  1)
+nextLine=`expr $beginLine + 1`
+if [[ ! -z "$ednLine" ]] && [[ ! -z "$beginLine" ]] && [[ ! -z "$ednLine" ]];
+then
+sed -i '' "$nextLine,$ednLine d" $file_path
+fi
+}
+exec 3<$CLASSES_FILE_LIST
+while read name<&3
+do
+if [[ ! -z "$name" ]];
+then
+remove_h $name
+remove_m $name
+fi
+done
+echo  删除完成
+rm $CLASSES_FILE_LIST
+########################################################################
+else
+echo 无效参数
+fi
+
+
+
+
