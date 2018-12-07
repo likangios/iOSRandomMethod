@@ -16,60 +16,52 @@
 添加的示例方法是这样的：
 
 @interface ViewController : UIViewController
+
 +(void)LocalCellNameToolShare;
+
 +(void)WebShowHasUserClean;
+
 +(void)HeightScrollMessageModelHeight;
+
 +(void)CellTypeDidAppHistory;
+
 +(void)ShowMessagePushNameTool;
+
 +(void)ScrollWebModelHasUser;
+
 +(void)TypePushAppToolInput;
+
 +(void)BackCellNameDidShare;
+
 -(void)HeightShowHasDeviceClean;
+
 -(void)CellNameToolShareVoice;
+
 /////RandomMethodTag End/////
 @end
 
 @implementation ViewController
-+(void)LocalCellNameToolShare{
-}
-+(void)WebShowHasUserClean{
-}
-+(void)HeightScrollMessageModelHeight{
-}
-+(void)CellTypeDidAppHistory{
-}
-+(void)ShowMessagePushNameTool{
-}
-+(void)ScrollWebModelHasUser{
-}
-+(void)TypePushAppToolInput{
-}
-+(void)BackCellNameDidShare{
-}
--(void)HeightShowHasDeviceClean{
-}
 -(void)CellNameToolShareVoice{
 }
+
 -(void)StopTypeDidAppHistory{
 }
+
 -(void)ScrollMessageDeviceHeightVersion{
 }
+
 -(void)TypeDidShareHistoryAnimation{
-}
--(void)LocalPushNameToolInput{
-}
--(void)WebModelHasUserConfig{
-}
--(void)PushAppToolDeviceClean:(id)arg1{
-}
--(void)CellNameDidShareVoice:(id)arg1{
 }
 -(id)ShowHasDeviceCleanShadow:(id)arg1{
 NSArray *obj=[[NSArray alloc]init];
 return obj;
 }
+
 -(id)ScrollMessageModelHeightVersion:(id)arg1{
 NSSet *obj=[[NSSet alloc]init];
 return obj;
 }
+
+@end
+
 
