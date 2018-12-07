@@ -1,10 +1,15 @@
 # iOSRandomMethod
+
 一个给iOS 项目添加 随机方法的小脚本
 
 使用方法：
+
 添加随机方法
+
 ./iosRandomMethodScript add /文件目录 方法个数（默认5个）
+
 移除随机方法
+
 ./iosRandomMethodScript rm /文件目录
 
 例如：
