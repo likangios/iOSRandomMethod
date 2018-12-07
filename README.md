@@ -14,6 +14,7 @@
 给项目xueqianzaojiao  下面的Module路径下的文件 添加20个随机方法  
 
 添加的示例方法是这样的：
+
 @interface ViewController : UIViewController
 +(void)LocalCellNameToolShare;
 +(void)WebShowHasUserClean;
