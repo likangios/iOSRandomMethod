@@ -27,7 +27,7 @@ ls  $FILE_PATH | awk -F "/" '{print $NF}'| awk '{split($0,b,"."); print b[1]; }'
 ########################################################################
 #给.h文件添加标记
 addTagToH(){
-linenumber=$(grep  -n  "interface"   $FILE_PATH/$1.h  | tail -1 | cut  -d  ":"  -f  1)
+linenumber=$(grep  -n  "@interface"   $FILE_PATH/$1.h  | tail -1 | cut  -d  ":"  -f  1)
 sed -i '' "$linenumber a\\
 /////RandomMethodTag End/////
 " $FILE_PATH/$1.h
@@ -35,7 +35,7 @@ sed -i '' "$linenumber a\\
 #给.m文件添加标记
 addTagToM(){
 #查找到包含implementation 的最后一行 获取行号
-linenumber=$(grep  -n  "implementation"   $FILE_PATH/$1.m  | tail -1 | cut  -d  ":"  -f  1)
+linenumber=$(grep  -n  "@implementation"   $FILE_PATH/$1.m  | tail -1 | cut  -d  ":"  -f  1)
 sed -i '' "$linenumber a\\
 /////RandomMethodTag End/////
 " $FILE_PATH/$1.m
@@ -154,7 +154,7 @@ echo 生成随机方法完成
 #添加.h
 addMethdo_h(){
 file_path=$FILE_PATH/$1.h
-linenumber=$(grep  -n  "interface"   $file_path  | tail -1 | cut  -d  ":"  -f  1)
+linenumber=$(grep  -n  "@interface"   $file_path  | tail -1 | cut  -d  ":"  -f  1)
 cat "$METHOD_FILE_H" | while read  line; do
 if [[ ! -z "$line" ]] && [[ ! -z "$linenumber" ]];
 then
@@ -168,7 +168,7 @@ done
 #添加.m
 addMethdo_m(){
 file_path=$FILE_PATH/$1.m
-linenumber=$(grep  -n  "implementation"   $file_path  | tail -1 | cut  -d  ":"  -f  1)
+linenumber=$(grep  -n  "@implementation"   $file_path  | tail -1 | cut  -d  ":"  -f  1)
 cat "$METHOD_FILE_M" | while read  line; do
 if [[ ! -z "$line" ]] && [[ ! -z "$linenumber" ]];
 then
@@ -197,7 +197,7 @@ echo  删除随机方法
 #替换方法H
 remove_h(){
 file_path=$FILE_PATH/$1.h
-beginLine=$(grep  -n  "interface"   $file_path  | tail -1 | cut  -d  ":"  -f  1)
+beginLine=$(grep  -n  "@interface"   $file_path  | tail -1 | cut  -d  ":"  -f  1)
 ednLine=$(grep  -n  "/////RandomMethodTag End/////"   $file_path  | tail -1 | cut  -d  ":"  -f  1)
 nextLine=`expr $beginLine + 1`
 if [[ ! -z "$ednLine" ]] && [[ ! -z "$beginLine" ]] && [[ ! -z "$ednLine" ]];
@@ -208,7 +208,7 @@ fi
 remove_m(){
 #查找到包含implementation 的最后一行 获取行号
 file_path=$FILE_PATH/$1.m
-beginLine=$(grep  -n  "implementation"   $file_path  | tail -1 | cut  -d  ":"  -f  1)
+beginLine=$(grep  -n  "@implementation"   $file_path  | tail -1 | cut  -d  ":"  -f  1)
 ednLine=$(grep  -n  "/////RandomMethodTag End/////"   $file_path  | tail -1 | cut  -d  ":"  -f  1)
 nextLine=`expr $beginLine + 1`
 if [[ ! -z "$ednLine" ]] && [[ ! -z "$beginLine" ]] && [[ ! -z "$ednLine" ]];
